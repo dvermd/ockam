@@ -1,53 +1,71 @@
 use crate::SecureChannelError;
-use ockam_core::compat::string::{String, ToString};
-use ockam_core::{Decodable, Encodable, Encoded, Result};
+use ockam_core::compat::string::String;
+use ockam_core::{Decodable, Encodable, LocalInfo, LocalMessage, Result};
 use serde::{Deserialize, Serialize};
 
 /// SecureChannel LocalInfo unique Identifier
-pub const LOCAL_INFO_IDENTIFIER: &str = "SECURE_CHANNEL_ID";
-
-#[derive(Serialize, Deserialize)]
-struct Internal {
-    identifier: String,
-    key_exchange: String,
-}
+pub const SECURE_CHANNEL_IDENTIFIER: &str = "SECURE_CHANNEL_IDENTIFIER";
 
 /// Entity SecureChannel LocalInfo used for LocalMessage
-pub struct LocalInfo {
-    internal: Internal,
+#[derive(Serialize, Deserialize)]
+pub struct SecureChannelLocalInfo {
+    key_exchange: String,
+    auth_hash: Vec<u8>,
 }
 
-impl Encodable for LocalInfo {
-    fn encode(&self) -> Result<Encoded> {
-        self.internal.encode()
-    }
-}
-
-impl Decodable for LocalInfo {
-    fn decode(e: &[u8]) -> Result<Self> {
-        let internal = Internal::decode(e)?;
-        if internal.identifier != LOCAL_INFO_IDENTIFIER {
+impl SecureChannelLocalInfo {
+    /// TODO
+    pub fn from_local_info(value: &LocalInfo) -> Result<Self> {
+        if value.type_identifier() != SECURE_CHANNEL_IDENTIFIER {
             return Err(SecureChannelError::InvalidLocalInfoType.into());
         }
-        Ok(Self { internal })
+
+        if let Ok(info) = SecureChannelLocalInfo::decode(value.data()) {
+            return Ok(info);
+        }
+
+        Err(SecureChannelError::InvalidLocalInfoType.into())
+    }
+
+    /// TODO
+    pub fn to_local_info(&self) -> Result<LocalInfo> {
+        Ok(LocalInfo::new(
+            SECURE_CHANNEL_IDENTIFIER.into(),
+            self.encode()?,
+        ))
+    }
+
+    /// TODO
+    pub fn find_info(local_msg: &LocalMessage) -> Result<Self> {
+        if let Some(local_info) = local_msg
+            .local_info()
+            .iter()
+            .find(|x| x.type_identifier() == SECURE_CHANNEL_IDENTIFIER)
+        {
+            Self::from_local_info(local_info)
+        } else {
+            Err(SecureChannelError::InvalidLocalInfoType.into())
+        }
     }
 }
 
-impl LocalInfo {
+impl SecureChannelLocalInfo {
     /// Key exchange name
     pub fn key_exchange(&self) -> &str {
-        &self.internal.key_exchange
+        &self.key_exchange
+    }
+    /// Auth hash
+    pub fn auth_hash(&self) -> &[u8] {
+        &self.auth_hash
     }
 }
 
-impl LocalInfo {
+impl SecureChannelLocalInfo {
     /// Constructor
-    pub fn new(key_exchange: String) -> Self {
+    pub fn new(key_exchange: String, auth_hash: Vec<u8>) -> Self {
         Self {
-            internal: Internal {
-                identifier: LOCAL_INFO_IDENTIFIER.to_string(),
-                key_exchange,
-            },
+            key_exchange,
+            auth_hash,
         }
     }
 }

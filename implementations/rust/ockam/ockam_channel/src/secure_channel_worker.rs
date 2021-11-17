@@ -1,6 +1,6 @@
 use crate::{
-    CreateResponderChannelMessage, LocalInfo, SecureChannelError, SecureChannelKeyExchanger,
-    SecureChannelVault,
+    CreateResponderChannelMessage, SecureChannelError, SecureChannelKeyExchanger,
+    SecureChannelLocalInfo, SecureChannelVault,
 };
 use ockam_core::async_trait;
 use ockam_core::compat::{boxed::Box, string::String, vec::Vec};
@@ -18,6 +18,7 @@ pub(crate) struct ChannelKeys {
     encrypt_key: Secret,
     decrypt_key: Secret,
     nonce: u16,
+    auth_hash: Vec<u8>,
 }
 
 /// SecureChannel is an abstraction responsible for sending messages (usually over the network) in
@@ -179,7 +180,7 @@ impl<V: SecureChannelVault, K: SecureChannelKeyExchanger> SecureChannelWorker<V,
         let payload = transport_message.payload;
         let payload = Vec::<u8>::decode(&payload)?;
 
-        let payload = {
+        let (payload, auth_hash) = {
             let keys = Self::get_keys(&mut self.keys)?;
 
             if payload.len() < 2 {
@@ -188,9 +189,12 @@ impl<V: SecureChannelVault, K: SecureChannelKeyExchanger> SecureChannelWorker<V,
 
             let nonce = Self::convert_nonce_small(&payload.as_slice()[..2])?;
 
-            self.vault
-                .aead_aes_gcm_decrypt(&keys.decrypt_key, &payload[2..], &nonce, &[])
-                .await?
+            (
+                self.vault
+                    .aead_aes_gcm_decrypt(&keys.decrypt_key, &payload[2..], &nonce, &[])
+                    .await?,
+                keys.auth_hash.clone(),
+            )
         };
 
         let mut transport_message = TransportMessage::decode(&payload)?;
@@ -200,9 +204,9 @@ impl<V: SecureChannelVault, K: SecureChannelKeyExchanger> SecureChannelWorker<V,
             .modify()
             .prepend(self.address_local.clone());
 
-        let local_info = LocalInfo::new(self.key_exchange_name.clone());
+        let info = SecureChannelLocalInfo::new(self.key_exchange_name.clone(), auth_hash);
 
-        let local_msg = LocalMessage::new(transport_message, local_info.encode()?);
+        let local_msg = LocalMessage::new(transport_message, vec![info.to_local_info()?]);
 
         ctx.forward(local_msg).await
     }
@@ -255,6 +259,7 @@ impl<V: SecureChannelVault, K: SecureChannelKeyExchanger> SecureChannelWorker<V,
                 encrypt_key: keys.encrypt_key().clone(),
                 decrypt_key: keys.decrypt_key().clone(),
                 nonce: 0,
+                auth_hash: keys.h().to_vec(),
             });
 
             let role_str = if self.is_initiator {

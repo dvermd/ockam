@@ -1,5 +1,5 @@
 use crate::ProfileIdentifier;
-use ockam_core::{async_trait, AccessControl, Decodable, LocalMessage, Result};
+use ockam_core::{async_trait, AccessControl, LocalMessage, Result};
 
 mod secure_channel_worker;
 pub(crate) use secure_channel_worker::*;
@@ -25,33 +25,24 @@ impl EntitySecureChannelAccessControl {
 #[async_trait]
 impl AccessControl for EntitySecureChannelAccessControl {
     async fn msg_is_authorized(&mut self, local_msg: &LocalMessage) -> Result<bool> {
-        if let Ok(msg_profile_id) = get_secure_channel_participant_id(local_msg) {
-            Ok(msg_profile_id == self.their_profile_id)
+        if let Ok(msg_profile_id) = EntitySecureChannelLocalInfo::find_info(local_msg) {
+            Ok(msg_profile_id.their_profile_id() == &self.their_profile_id)
         } else {
             Ok(false)
         }
     }
 }
 
-// TODO: rename
-pub fn get_secure_channel_participant_id(local_msg: &LocalMessage) -> Result<ProfileIdentifier> {
-    let local_info = LocalInfo::decode(local_msg.local_info())?;
-
-    let res = local_info.their_profile_id().clone();
-
-    Ok(res)
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::{Entity, Identity};
+    use core::convert::TryInto;
     use core::sync::atomic::{AtomicU8, Ordering};
     use ockam_core::compat::sync::Arc;
     use ockam_core::{route, Any, Route, Routed, Worker};
     use ockam_node::Context;
     use ockam_vault_sync_core::Vault;
-    use std::convert::TryInto;
     use std::time::Duration;
     use tokio::time::sleep;
 
@@ -80,7 +71,7 @@ mod test {
         .await?;
         let msg = ctx.receive::<String>().await?.take();
 
-        let local_info = LocalInfo::decode(msg.local_message().local_info())?;
+        let local_info = EntitySecureChannelLocalInfo::find_info(msg.local_message())?;
         assert_eq!(local_info.their_profile_id(), &alice.identifier().await?);
 
         let return_route = msg.return_route();
@@ -90,9 +81,7 @@ mod test {
 
         let msg = ctx.receive::<String>().await?.take();
 
-        let local_info = msg.local_message().local_info();
-
-        let local_info = LocalInfo::decode(local_info)?;
+        let local_info = EntitySecureChannelLocalInfo::find_info(msg.local_message())?;
         assert_eq!(local_info.their_profile_id(), &bob.identifier().await?);
 
         assert_eq!("Hello, Alice!", msg.body());
