@@ -43,6 +43,9 @@ Special workers can be used to "wrap" unreliable delivery and provide reliable d
 
 **TODO: picture**
 
+Main tool to implement end-to-end wrapping is called Pipe,
+more on pipes in [Pipes and Channels](./Pipes_Channels.md)
+
 
 ## Properties
 
@@ -56,7 +59,7 @@ Special workers can be used to "wrap" unreliable delivery and provide reliable d
 
 1. [Ordering](./Ordering.md)
   Ordefing describes whether messages are received in the same order as they were sent
-  Uniqness is related to ordering in the sense that absolute strict ordering requires no duplicates, hence similar techniques are used to achieve those properties
+  Uniqness is related to ordering in the sense that absolute ordering requires no duplicates, hence similar techniques are used to achieve those properties
 
 1. [Integrity](./Integrity.md)
   Integrity describes whether received messages carry the same data as sent messages, that they are not corrupted
@@ -68,4 +71,3 @@ Special workers can be used to "wrap" unreliable delivery and provide reliable d
 1. [Autheniticity and authorization](./Trust.md)
    Autheniticity describes whether messages received originated at the specific sender
    Authorization describes messages can be received by a certain receiver if they were send by a certain sender or went through a certain route
-

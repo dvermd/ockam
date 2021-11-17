@@ -11,12 +11,12 @@ Different transports have different delivery properties, routes may forward a me
 
 ## Definitions and symbols
 
-Message:
+### Message
 A piece of information which can be sent and received by Workers.
 
 Message names use lower case, usually starting with `m`, e.g. `m1`, `msg1`, `m_create`
 
-Worker:
+### Worker
 A stateful system which can receive and send messages.
 
 Workers are named staring with uppercase letters, e.g. `worker A`, `worker Sender`, `worker C1`
@@ -38,7 +38,7 @@ transport addresses and local node addresses
 
 More on local addresses in [Accessibility](./Accessibility.md#local_routes)
 
-Route:
+### Route
 
 A path that message can be sent to
 
@@ -62,7 +62,7 @@ We can use both `->` and list notation together, e.g. `[A] ; A->C`
 Routes without specific addresses are written with lowercase names starting with `r`, e.g `r1`, `r_onward`, `r_return`
 
 
-Delivery:
+### Delivery
 
 A sequence of messages `m1,m2,m3...` send from `worker A` to route `A->B` and received by `worker B`
 Dlievery might have multiple dynamic **delivery properties**, usually statistically measured
@@ -71,6 +71,17 @@ More on delivery properties in [Delivery properties](./Delivery.md)
 
 Delivery exists per route, if messages `m1,m3` are sent over route `A->B` and messages `m2,m4` sent over route `A'->B'`, those are two different deliveries.
 Because of that, we can use routes to identify deliveries, e.g. delivery `A->B`
+
+### Pipe
+
+A pair of coordinated workers which provide certain end-to-end delivery with certain properties
+
+### Channel
+
+A pair of coordinated workers which provide certain end-to-end delivery with certain properties in both directions
+
+More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
+
 
 
 Up next: [Delivery properties overview](Delivery.md)

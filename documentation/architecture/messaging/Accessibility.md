@@ -170,11 +170,11 @@ As a general rule, delivery through static forwarders and pipes is not backtrace
 but additional forwarding workers can be used to manipulate routes and build backtraceable delivery
 over multiple static forwarders.
 
-More on that in [Pipes and channels](./Pipes_Channels.md)
-
 
 Metadata forwarders may trace routes, but it depends on the specific implementation.
 
+
+More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
 
 Back to: [Delivery properties](Delivery.md)
 
