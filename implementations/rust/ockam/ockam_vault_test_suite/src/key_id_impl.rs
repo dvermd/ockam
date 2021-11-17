@@ -19,7 +19,7 @@ pub async fn compute_key_id_for_public_key(vault: &mut impl KeyIdVault) {
 
 pub async fn get_secret_by_key_id(vault: &mut (impl KeyIdVault + SecretVault)) {
     let attributes = SecretAttributes::new(
-        SecretType::Curve25519,
+        SecretType::X25519,
         SecretPersistence::Ephemeral,
         CURVE25519_SECRET_LENGTH,
     );

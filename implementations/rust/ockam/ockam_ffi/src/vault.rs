@@ -266,7 +266,7 @@ pub extern "C" fn ockam_vault_ecdh(
             let ctx = Secret::new(secret as usize);
             let atts = v.secret_attributes_get(&ctx).await?;
             let pubkey = match atts.stype() {
-                SecretType::Curve25519 => {
+                SecretType::X25519 => {
                     if peer_publickey.len() != 32 {
                         Err(FfiError::InvalidPublicKey)
                     } else {

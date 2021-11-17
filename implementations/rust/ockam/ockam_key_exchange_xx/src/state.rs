@@ -68,7 +68,7 @@ impl<V: XXVault> State<V> {
     /// Create a new `HandshakeState` starting with the prologue
     async fn prologue(&mut self) -> Result<()> {
         let attributes = SecretAttributes::new(
-            SecretType::Curve25519,
+            SecretType::X25519,
             SecretPersistence::Ephemeral,
             CURVE25519_SECRET_LENGTH,
         );
@@ -662,7 +662,7 @@ mod tests {
         ephemeral_private: &str,
     ) -> State<V> {
         let attributes = SecretAttributes::new(
-            SecretType::Curve25519,
+            SecretType::X25519,
             SecretPersistence::Ephemeral,
             CURVE25519_SECRET_LENGTH,
         );

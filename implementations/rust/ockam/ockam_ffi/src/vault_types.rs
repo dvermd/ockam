@@ -70,10 +70,11 @@ impl From<SecretAttributes> for FfiSecretAttributes {
         let stype = match attrs.stype() {
             SecretType::Buffer => 0,
             SecretType::Aes => 1,
-            SecretType::Curve25519 => 2,
-            SecretType::P256 => 3,
+            SecretType::X25519 => 2,
+            SecretType::Ed25519 => 3,
+            SecretType::P256 => 4,
             #[cfg(feature = "bls")]
-            SecretType::Bls => 4,
+            SecretType::Bls => 5,
         };
 
         let persistence = match attrs.persistence() {
@@ -92,7 +93,7 @@ impl TryFrom<FfiSecretAttributes> for SecretAttributes {
         let stype = match attrs.stype() {
             0 => Ok(SecretType::Buffer),
             1 => Ok(SecretType::Aes),
-            2 => Ok(SecretType::Curve25519),
+            2 => Ok(SecretType::X25519),
             3 => Ok(SecretType::P256),
             #[cfg(feature = "bls")]
             4 => Ok(SecretType::Bls),

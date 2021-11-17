@@ -6,7 +6,7 @@ use ockam_vault_core::{
 
 pub async fn new_public_keys(vault: &mut impl SecretVault) {
     let attributes = SecretAttributes::new(
-        SecretType::Curve25519,
+        SecretType::X25519,
         SecretPersistence::Ephemeral,
         CURVE25519_SECRET_LENGTH,
     );
@@ -30,7 +30,7 @@ pub async fn new_public_keys(vault: &mut impl SecretVault) {
 }
 
 pub async fn new_secret_keys(vault: &mut impl SecretVault) {
-    let types = [(SecretType::Curve25519, 32), (SecretType::Buffer, 24)];
+    let types = [(SecretType::X25519, 32), (SecretType::Buffer, 24)];
     for (t, s) in &types {
         let attributes = SecretAttributes::new(*t, SecretPersistence::Ephemeral, *s);
         let res = vault.secret_generate(attributes).await;
@@ -44,7 +44,7 @@ pub async fn new_secret_keys(vault: &mut impl SecretVault) {
 
 pub async fn secret_import_export(vault: &mut impl SecretVault) {
     let attributes = SecretAttributes::new(
-        SecretType::Curve25519,
+        SecretType::X25519,
         SecretPersistence::Ephemeral,
         CURVE25519_SECRET_LENGTH,
     );
@@ -79,7 +79,7 @@ pub async fn secret_import_export(vault: &mut impl SecretVault) {
 
 pub async fn secret_attributes_get(vault: &mut impl SecretVault) {
     let attributes = SecretAttributes::new(
-        SecretType::Curve25519,
+        SecretType::X25519,
         SecretPersistence::Ephemeral,
         CURVE25519_SECRET_LENGTH,
     );

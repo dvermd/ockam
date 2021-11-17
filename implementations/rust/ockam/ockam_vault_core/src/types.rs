@@ -115,7 +115,9 @@ pub enum SecretType {
     /// AES key
     Aes,
     /// Curve 22519 key
-    Curve25519,
+    X25519,
+    /// Curve 22519 key
+    Ed25519,
     /// P256 key
     P256,
     /// BLS key

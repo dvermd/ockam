@@ -47,12 +47,12 @@ impl<V: X3dhVault> Responder<V> {
 
     async fn prologue(&mut self) -> Result<()> {
         let p_atts = SecretAttributes::new(
-            SecretType::Curve25519,
+            SecretType::X25519,
             SecretPersistence::Persistent,
             CURVE25519_SECRET_LENGTH,
         );
         let e_atts = SecretAttributes::new(
-            SecretType::Curve25519,
+            SecretType::X25519,
             SecretPersistence::Ephemeral,
             CURVE25519_SECRET_LENGTH,
         );

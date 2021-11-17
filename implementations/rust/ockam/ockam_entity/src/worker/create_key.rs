@@ -100,7 +100,7 @@ impl ProfileState {
             }
             else {
                 let secret_attributes = SecretAttributes::new(
-                    SecretType::Curve25519,
+                    SecretType::Ed25519,
                     SecretPersistence::Persistent,
                     CURVE25519_SECRET_LENGTH,
                 );

@@ -14,7 +14,7 @@ impl Signer for SoftwareVault {
         let entry = self.get_entry(secret_key)?;
         let key = entry.key().as_ref();
         match entry.key_attributes().stype() {
-            SecretType::Curve25519 => {
+            SecretType::X25519 => {
                 if key.len() == CURVE25519_SECRET_LENGTH {
                     let mut rng = thread_rng();
                     let mut nonce = [0u8; 64];
@@ -29,6 +29,19 @@ impl Signer for SoftwareVault {
                 } else {
                     Err(VaultError::InvalidKeyType.into())
                 }
+            }
+            SecretType::Ed25519 => {
+                use ed25519_dalek::Signer;
+                let sk = ed25519_dalek::SecretKey::from_bytes(key).unwrap();
+                let pk = ed25519_dalek::PublicKey::from(&sk);
+
+                let kp = ed25519_dalek::Keypair {
+                    public: pk,
+                    secret: sk,
+                };
+
+                let sig = kp.sign(data.as_ref());
+                Ok(Signature::new(sig.to_bytes().to_vec()))
             }
             #[cfg(feature = "bls")]
             SecretType::Bls => {
