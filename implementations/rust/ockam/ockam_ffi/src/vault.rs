@@ -270,14 +270,14 @@ pub extern "C" fn ockam_vault_ecdh(
                     if peer_publickey.len() != 32 {
                         Err(FfiError::InvalidPublicKey)
                     } else {
-                        Ok(PublicKey::new(peer_publickey.to_vec()))
+                        Ok(PublicKey::new(peer_publickey.to_vec(), SecretType::X25519))
                     }
                 }
                 SecretType::P256 => {
                     if peer_publickey.len() != 65 {
                         Err(FfiError::InvalidPublicKey)
                     } else {
-                        Ok(PublicKey::new(peer_publickey.to_vec()))
+                        Ok(PublicKey::new(peer_publickey.to_vec(), SecretType::P256))
                     }
                 }
                 _ => Err(FfiError::UnknownPublicKeyType),

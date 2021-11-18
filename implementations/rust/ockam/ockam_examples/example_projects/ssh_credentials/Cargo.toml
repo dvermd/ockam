@@ -20,3 +20,4 @@ path = "src/bin/bob.rs"
 [dependencies]
 ockam = { path = "../../../ockam" }
 ockam_github = { path = "../../../ockam_github" }
+ockam_vault_core = { path = "../../../ockam_vault_core" }

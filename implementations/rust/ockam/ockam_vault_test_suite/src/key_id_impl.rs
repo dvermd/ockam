@@ -7,7 +7,7 @@ use ockam_vault_core::{
 pub async fn compute_key_id_for_public_key(vault: &mut impl KeyIdVault) {
     let public =
         decode("68858ea1ea4e1ade755df7fb6904056b291d9781eb5489932f46e32f12dd192a").unwrap();
-    let public = PublicKey::new(public.to_vec());
+    let public = PublicKey::new(public.to_vec(), SecretType::X25519);
 
     let key_id = vault.compute_key_id_for_public_key(&public).await.unwrap();
 

@@ -1,57 +1,89 @@
-use ockam_core::{Address, Result, Route};
-use ockam_entity::Entity;
+use ockam_core::{Address, AsyncTryClone, Result, Route};
 use ockam_node::Context;
+use ockam_vault_core::{Secret, Signer, Verifier};
 
 mod access_control;
 mod credentials_registry;
 mod error;
+mod keys;
 mod verifier;
 
 pub use access_control::*;
 pub use credentials_registry::*;
 pub use error::*;
+pub use keys::*;
 pub use verifier::*;
 
-pub struct GithubSshAuth;
+/// Traits required for a Vault implementation suitable for use in a Profile
+pub trait GhVault: Signer + Verifier + AsyncTryClone + Send + 'static {}
 
-impl GithubSshAuth {
-    pub async fn start_registry(ctx: &Context) -> Result<Address> {
-        let worker = CredentialsRegistryWorker::new(Default::default());
+impl<D> GhVault for D where D: Signer + Verifier + AsyncTryClone + Send + 'static {}
+
+pub struct GithubSshAuth<V: GhVault> {
+    ctx: Context,
+    vault: V,
+}
+
+impl<V: GhVault> GithubSshAuth<V> {
+    pub async fn new(ctx: &Context, vault: V) -> Result<Self> {
+        let ctx = ctx.new_context(Address::random(0)).await?;
+        Ok(GithubSshAuth { ctx, vault })
+    }
+}
+
+impl<V: GhVault> GithubSshAuth<V> {
+    pub async fn start_registry(&self) -> Result<Address> {
+        let worker = CredentialsRegistryWorker::default();
         let address = Address::random(0);
 
-        ctx.start_worker(address.clone(), worker).await?;
+        self.ctx.start_worker(address.clone(), worker).await?;
 
         Ok(address)
     }
 
     pub async fn start_verifier(
         &mut self,
-        ctx: &Context,
         address: Address,
         registry_address: Address,
     ) -> Result<()> {
-        let verifier = GithubSshVerifier::new(registry_address);
+        let verifier =
+            GithubSshVerifier::new(registry_address, self.vault.async_try_clone().await?);
 
-        ctx.start_worker(address, verifier).await
+        self.ctx.start_worker(address, verifier).await
     }
 
     pub async fn create_access_control(
         &mut self,
-        allowed_nicknames: Vec<String>,
+        allowed_nickname: String,
         registry_address: Address,
     ) -> Result<GithubSshAccessControl> {
-        Ok(GithubSshAccessControl::new(
-            allowed_nicknames,
-            registry_address,
-        ))
+        GithubSshAccessControl::new(&self.ctx, allowed_nickname, registry_address).await
     }
 
     pub async fn present_credential(
         &mut self,
-        entity: &mut Entity,
-        key_label: String,
+        nickname: String,
+        key: &Secret,
         verifier_route: Route,
-    ) -> Result<()> {
-        unimplemented!()
+    ) -> Result<bool> {
+        let auth_hash = [0u8; 32]; // FIXME
+        let proof = self.vault.sign(key, &auth_hash).await?;
+
+        let mut child_ctx = self.ctx.new_context(Address::random(0)).await?;
+        child_ctx
+            .send(
+                verifier_route,
+                GithubSshVerifierRequest::Verify { nickname, proof },
+            )
+            .await?;
+
+        let resp = child_ctx
+            .receive::<GithubSshVerifierResponse>()
+            .await?
+            .take()
+            .body();
+        let GithubSshVerifierResponse::Verify(res) = resp;
+
+        Ok(res)
     }
 }

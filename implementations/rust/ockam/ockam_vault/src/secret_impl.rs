@@ -33,16 +33,22 @@ impl SoftwareVault {
                 ]);
                 let public = x25519_dalek::PublicKey::from(&sk);
                 Some(
-                    self.compute_key_id_for_public_key(&PublicKey::new(public.as_bytes().to_vec()))
-                        .await?,
+                    self.compute_key_id_for_public_key(&PublicKey::new(
+                        public.as_bytes().to_vec(),
+                        SecretType::X25519,
+                    ))
+                    .await?,
                 )
             }
             SecretType::Ed25519 => {
                 let sk = ed25519_dalek::SecretKey::from_bytes(secret).unwrap(); // FIXME
                 let public = ed25519_dalek::PublicKey::from(&sk);
                 Some(
-                    self.compute_key_id_for_public_key(&PublicKey::new(public.as_bytes().to_vec()))
-                        .await?,
+                    self.compute_key_id_for_public_key(&PublicKey::new(
+                        public.as_bytes().to_vec(),
+                        SecretType::Ed25519,
+                    ))
+                    .await?,
                 )
             }
             #[cfg(feature = "bls")]
@@ -186,12 +192,12 @@ impl SecretVault for SoftwareVault {
                     CURVE25519_SECRET_LENGTH
                 ]);
                 let pk = x25519_dalek::PublicKey::from(&sk);
-                Ok(PublicKey::new(pk.to_bytes().to_vec()))
+                Ok(PublicKey::new(pk.to_bytes().to_vec(), SecretType::X25519))
             }
             SecretType::Ed25519 => {
                 let sk = ed25519_dalek::SecretKey::from_bytes(entry.key().as_ref()).unwrap();
                 let pk = ed25519_dalek::PublicKey::from(&sk);
-                Ok(PublicKey::new(pk.to_bytes().to_vec()))
+                Ok(PublicKey::new(pk.to_bytes().to_vec(), SecretType::Ed25519))
             }
             #[cfg(feature = "bls")]
             SecretType::Bls => {

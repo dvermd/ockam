@@ -92,7 +92,7 @@ impl ProfileChangeHistory {
         if data.is_empty() {
             Err(EntityError::InvalidInternalState.into())
         } else {
-            Ok(PublicKey::new(data.into()))
+            Ok(PublicKey::new(data.into(), SecretType::Ed25519))
         }
     }
 
@@ -147,6 +147,7 @@ impl ProfileChangeHistory {
 
         Ok(PublicKey::new(
             root_create_key_change.data().public_key().to_vec(),
+            SecretType::Ed25519,
         ))
     }
 
@@ -221,7 +222,7 @@ impl ProfileChangeHistory {
                     vault
                         .verify(
                             c.self_signature(),
-                            &PublicKey::new(c.data().public_key().into()),
+                            &PublicKey::new(c.data().public_key().into(), SecretType::Ed25519),
                             &data_hash,
                         )
                         .await?
@@ -234,7 +235,7 @@ impl ProfileChangeHistory {
                     if !vault
                         .verify(
                             c.self_signature(),
-                            &PublicKey::new(c.data().public_key().into()),
+                            &PublicKey::new(c.data().public_key().into(), SecretType::Ed25519),
                             &data_hash,
                         )
                         .await?

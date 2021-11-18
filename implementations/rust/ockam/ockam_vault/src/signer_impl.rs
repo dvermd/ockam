@@ -1,11 +1,8 @@
 use crate::software_vault::SoftwareVault;
-use crate::xeddsa::XEddsaSigner;
 use crate::VaultError;
-use arrayref::array_ref;
-use ockam_core::compat::rand::{thread_rng, RngCore};
 use ockam_core::Result;
 use ockam_core::{async_trait, compat::boxed::Box};
-use ockam_vault_core::{Secret, SecretType, Signature, Signer, CURVE25519_SECRET_LENGTH};
+use ockam_vault_core::{Secret, SecretType, Signature, Signer};
 
 #[async_trait]
 impl Signer for SoftwareVault {
@@ -15,6 +12,10 @@ impl Signer for SoftwareVault {
         let key = entry.key().as_ref();
         match entry.key_attributes().stype() {
             SecretType::X25519 => {
+                use crate::xeddsa::XEddsaSigner;
+                use arrayref::array_ref;
+                use ockam_core::compat::rand::{thread_rng, RngCore};
+                use ockam_vault_core::CURVE25519_SECRET_LENGTH;
                 if key.len() == CURVE25519_SECRET_LENGTH {
                     let mut rng = thread_rng();
                     let mut nonce = [0u8; 64];
@@ -45,9 +46,11 @@ impl Signer for SoftwareVault {
             }
             #[cfg(feature = "bls")]
             SecretType::Bls => {
+                use arrayref::array_ref;
                 use signature_bbs_plus::{Issuer, MessageGenerators};
                 use signature_bls::SecretKey;
                 use signature_core::lib::Message;
+
                 if key.len() == 32 {
                     let bls_secret_key = SecretKey::from_bytes(array_ref!(key, 0, 32)).unwrap();
                     let generators = MessageGenerators::from_secret_key(&bls_secret_key, 1);
