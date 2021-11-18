@@ -10,11 +10,15 @@ Ordering of a delivery describes order in which messages are received in relatio
   A message `m1` which was sent before message `m2`,
   cannot be received after `m2`
 
+<img src="./images/monotonic.jpg" width="100%">
+
 1. Strict monotonic ordering
   A sequence is strictly ordered when:
   In a delivery `m1, m2, ...`
   A message `m1` which was sent before message `m2`,
   cannot be received after `m2` or after `m1`
+
+<img src="./images/strict.jpg" width="100%">
 
 Difference between monotonic and strict ordering is that
 **strict ordering doesn't allow duplicates**
@@ -25,6 +29,8 @@ Difference between monotonic and strict ordering is that
   A message `m2` which was sent after `m1`,
   cannot be received before `m1`
 
+<img src="./images/continuous.jpg" width="100%">
+
 Difference between monotonic and continuous ordering is that
 **continuous ordering doesn't allow message loss**
 
@@ -34,13 +40,14 @@ Difference between monotonic and continuous ordering is that
   A message `m2` which was sent after `m1`
   can only be received after `m1`
 
+<img src="./images/absolute.jpg" width="100%">
+
 **Absolute ordering doesn't allow neither message loss or duplicates**
 
-**TODO: pictures**
 
 **NOTE: all ordering properties exist per delivery, which only applies for messages sent via same route**
 
-**TODO: picture**
+<img src="./images/mutli_route.jpg" width="100%">
 
 ## Local delivery
 
@@ -48,23 +55,13 @@ Local delivery (delivery to local routes `[0#A]`) is **absolutely** ordered
 
 **This is a requirement for node implementations**
 
+<img src="./images/local_ordering.jpg" width="100%">
+
 However, workers **may** process messages in different order.
 
 ## Ordering in complex routes
 
 When forwarding messages through an intermediate worker, it can process messages in different order, which might reorder messages in delivery.
-
-### Pipelining ordering
-
-Similar to reliability, ordering guarantees are weakening when pipelining
-
-Pipelining monotonic and continous delivery results in monotonic delivery
-
-**TODO: picture**
-
-Pipelining strict and non-strict delivery results in non-strict delivery
-
-**TODO: picture**
 
 ### Ordered processors
 
@@ -75,7 +72,17 @@ Processors ordering has the same [ordering types](#Types_of_ordering) as deliver
 
 Delivery via local routes through an ordered processor has the same properties as the processor
 
-**TODO: picture**
+<img src="./images/ordered_processor.jpg" width="100%">
+
+### Pipelining ordering
+
+Similar to reliability, ordering guarantees are weakening when pipelining
+
+Pipelining monotonic and continous delivery results in monotonic delivery
+
+Pipelining strict and non-strict delivery results in non-strict delivery
+
+<img src="./images/pipelining_ordering.jpg" width="100%">
 
 
 ### Ordered pipes
@@ -88,7 +95,7 @@ More on pipes [here](./Pipes_Channels.md)
 Ordered pipes can be injected to turn unordered delivery on a route (or multiple routes)
 into an ordered delivery
 
-**TODO: picture**
+<img src="./images/ordered_pipe.jpg" width="100%">
 
 ## Implementing ordered pipes
 
@@ -102,7 +109,7 @@ To enforce continuity, sender may re-send messages which were not confirmed.
 
 To enforce strictness, receiver may confirm duplicate messages without sending them
 
-**TODO: picture**
+<img src="./images/sequential_pipe.jpg" width="100%">
 
 ### Indexed processing pipe:
 
@@ -115,8 +122,8 @@ To enforce continuity, receiver may request missing lower index messages when re
 
 To enforce strictness, receiver doesn't send messages with the same index to already sent messages
 
+<img src="./images/indexed_processing_pipe.jpg" width="100%">
 
-**TODO: picture**
 
 More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
 

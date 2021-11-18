@@ -29,7 +29,7 @@ In order to combine delivery over multiple steps, we use two main techniques:
 If we have a delivery `A->B` and delivery `B->C`, and we know the properties of those deliveries, (we know how the workers forwarding messages work)
 Then we can tell how a pipelined delivery `A->B;B->C` would behave.
 
-**TODO: picture**
+<img src="./images/pipelining.jpg" width="100%">
 
 1. End-to-end coordination:
 
@@ -41,7 +41,7 @@ Then we would set up end-to-end coordination between devices by adding some mess
 
 Special workers can be used to "wrap" unreliable delivery and provide reliable delivery over unreliable message pipelines, e.g. `D1->D1w ; D1w->C;C->D2w ; D2w->D2` where `D1w` and `D2w` are wrapper workers.
 
-**TODO: picture**
+<img src="./images/wrapping.jpg" width="100%">
 
 Main tool to implement end-to-end wrapping is called Pipe,
 more on pipes in [Pipes and Channels](./Pipes_Channels.md)

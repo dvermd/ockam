@@ -17,7 +17,10 @@ For consistency wirh reliability we can use inverted duplication rate, call it *
 
 If `UR = 1` when each message was received only one time, `UR = 0.5` when messages are received twice on average
 
-** TODO: pictures **
+<img src="./images/reliability.jpg" width="100%">
+
+Reliability `R(A->B) = 3/4` - 1 message out of 4 was lost
+Uniqness rate `UR(A->B) = 3/4` - 1 message out of 4 was duplicated
 
 
 ## Delivery modes
@@ -36,11 +39,14 @@ Exactly once delivery is controversal and hard to achieve in presence of errors.
 For practical purposes we're going to use more relaxed version of this definition
 where `DM = {R -> 1, UR -> 1}`
 
+<img src="./images/delivery_modes.jpg" width="100%">
+
+
 ## Pipeline reliability
 
 When pipelining deliveries, e.g. `A->B ; B->C`, reliability and uniqness rates are multiplying, because they are probabilities of dependent events
 
-** TODO: pictures **
+<img src="./images/pipeline_delivery.jpg" width="100%">
 
 Which means that 
 `R(A->B ; B->C) = R(A->B) * R(B->C)`
@@ -63,9 +69,13 @@ Workers supposed to have delivery mode close to exactly once **as long as both w
 
 For practical purposes delivery mode over a route with single local address `DM([0#B])` is assumed `{R->1, UR->1}`
 
+<img src="./images/local_delivery.jpg" width="100%">
+
 ## Pipe reliability
 
 Since local delivery mode is close to exactly-once, we can assume that reliability of a delivery via pipe `P1->P2`, which connects to endpoints `A` and `B` on local routes `A->0#P1 ; P1->P2 ; P2->0#B` can be described as number of unique messages sent by `P2` divided by number of messages received by `P1`.
+
+<img src="./images/delivery_pipe.jpg" width="100%">
 
 We call that **pipe reliability**
 
@@ -93,9 +103,12 @@ Given `DM(A->B) = {0.5, 1}`
 
 To control retries, confirmation messages and timeouts are used
 
-** TODO pictures **
+<img src="./images/retries.jpg" width="100%">
 
-**TODO: At least once pipe picture**
+To provide at-least once delivery between workers which don't have additional logic,
+at-least-once pipe can be used:
+
+<img src="./images/resend_pipe.jpg" width="100%">
 
 ## Improving uniqness rate
 
@@ -110,15 +123,15 @@ This is called **deduplication**, when we ignore some received messages based on
 Sender assigns a unique ID to each message
 Receiver discard messages with IDs already processed
 
+<img src="./images/id_pipe.jpg" width="100%">
+
 #### Index deduplication:
 
 Sender assigns each message next monotonic index
 Receiver discards messages with lower index then already processed.
 **Optionally receiver only processes next consecutive index**
 
-**TODO: pictures**
-
-**TODO: deduplication pipe picture**
+<img src="./images/index_pipe.jpg" width="100%">
 
 ## Reliable message delivery in presence of errors in the pipeline
 
@@ -131,13 +144,15 @@ then `R(A->B) = R(A->X)xR(X)xR(X->B)`
 
 If X has errors, then `R(X) < 1`
 
+<img src="./images/reliability_errors.jpg" width="100%">
+
 ### Pipe injection
 
 In order to achieve reliable delivery, we can inject a reliable delivery pipe between `A->B`
 Such that the messages will go via `A->P1 ; P1->X ; X->P2 ; P2->B`
 Then if `P1` and `P2` can achieve `R(P1->P2) = 1`, `R(A->B)` will also be `1`
 
-**TODO picture**
+<img src="./images/pipe_injection.jpg" width="100%">
 
 ### Cascade confirmation
 
@@ -148,33 +163,36 @@ For example if we have a pipeline `A->P1; P1->P2; P2->B` and delivery `P2->B` is
 
 There can be multiple confirming workers in this pipeline, e.g. `A->P1; P1->P2; P2->P3; P3-B` etc
 
-**TODO: picture**
+<img src="./images/cascade_confirm.jpg" width="100%">
 
 Cascade confirmations can be used to implement reliable **processing**
 
 Reliable processing is when the processing worker `B` sends confirmation when the message was processed and not when it was received.
 
-**TODO: picture**
+<img src="./images/reliable_processing.jpg" width="100%">
 
 
 ### Persistent storage
 
 Cascade confirmation can get long and requires long chains and lots of messages exchanged
+
 To optimize cascade confirmation, persistent storage can be used.
+
 Persistent storage `S` has `R(S) = ->1` as long as it does not delete data.
+
 This is also time dependent, but as long as message delay tolerance is lower then data storage time it's practical
+
+<img src="./images/persistent_storage.jpg" width="100%">
 
 Because `R(S) = ->1`
 Given `R(A->S) = ->1` (with confirmations)
 And `R(S->B) = ->1` (reading from the start in case of errors)
 Then `R(A->B) = ->1`
 
-**TODO: picture**
-
 
 Persistent storage is also useful in case of errors on `B` as long as `B` can recover and retry reading from the storage
 
-**TODO: picture**
+<img src="./images/persistent_storage_recovery.jpg" width="100%">
 
 More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
 
