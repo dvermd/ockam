@@ -8,13 +8,12 @@ It's related to reliability, but describes the principal ability to reach the de
 `Worker B` is **accessible from** `worker A` **via** route `A->B` when:
 a message sent by `A` to `A->B` can be received by `B`
 
-**TODO: PICTURE**
 
 Workers `A` and `B` are **mutually accessible** if there are routes:
 `A->B` **via** which `B` is **accessible from** `A`
 `B->A` **via** which `A` is **accessible from** `B`
 
-**TODO: PICTURE**
+<img src="./images/accessibility.jpg" width="100%">
 
 **Notation `A->B` in future implies that `B` is accessible by `A`**
 
@@ -37,6 +36,8 @@ it's **always accessible** via local route `[0#A]` by **all local workers**
 
 All node implementations should implement this behaviour.
 
+<img src="./images/local_accessibility.jpg" width="100%">
+
 
 ### Forwarder workers
 
@@ -53,20 +54,23 @@ If there is a route `F->B`
 Then `B` can be accessible by `A` via route `A->F` if
 Worker `F` upon receiving a message sends a message to onward route `F->B`
 
-**TODO: PICTURE**
 
 There are many ways to decide the route `F->B` here
 
 - It can be a part of the onward route, then `B` is accessible by `A` via `A->F ; F->B`
   Such routing worker is called **route based forwarder**
 
+<img src="./images/route_forwarder.jpg" width="100%">
+
 - If can be a part of the router worker state
   Such worker is called **static forwarder**
+
+<img src="./images/static_forwarder.jpg" width="100%">
 
 - It can be calculated from the message metadata
   Such worker is called **metadata forwarder**
 
-**TODO: PICTURE**
+<img src="./images/metadata_forwarder.jpg" width="100%">
 
 **Forwarding is the main instrument for workers accessibility**
 
@@ -94,7 +98,7 @@ and `Fr2` is a route-based forwarder
 
 Then worker `B` is accessible by `A` via `A->Fst1 ; Fr2->B`
 
-**TODO: PICTURE**
+<img src="./images/pipe.jpg" width="100%">
 
 This combination of workers is called a **routing pipe**
 
@@ -121,7 +125,7 @@ If delivery on a route `A->B` is backtraceable,
 then there is a route `B->A`, which is a backtrace of `A->B`,
 hence  `A` and `B` are mutually accessible.
 
-**TODO: PICTURE**
+<img src="./images/return_routes.jpg" width="100%">
 
 ### Local route backtracing
 
@@ -129,6 +133,8 @@ Sice a local route `[0#A]` leads to `A` from any local worker,
 then this route is a backtrace for any local route used to send messages from `A`
 
 All local delivery is backtraceable
+
+<img src="./images/local_mutual_accessibility.jpg" width="100%">
 
 ### Forwarding and backtracing
 
@@ -153,7 +159,11 @@ it should forward the message with return route `[0#F] ; F->B`
 
 This makes worker `A` and `B` mutually accessible via routes `A->F ; F'->B` and backtrace `B->F' ; F->A`
 
-**TODO: PICTURE**
+<img src="./images/proxy.jpg" width="100%">
+
+Distributed proxy worker (two workers working together as proxy) is called a channel:
+
+<img src="./images/channel.jpg" width="100%">
 
 Such forwarding worker is called **proxy worker**
 
