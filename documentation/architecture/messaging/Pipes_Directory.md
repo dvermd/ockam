@@ -11,7 +11,7 @@ If Sender does not receive a confirmation in some time - it sends the message ag
 
 If there are unconfirmed messages - Sender buffers them until it gets confirm
 
-**TODO: picture**
+<img src="./images/resend_pipe.jpg" width="100%">
 
 Requirements:
 
@@ -42,7 +42,7 @@ Delivery tolerates failures in the Receiver worker
 Same behaviour as for resend pipe, but instead of buffering unsent messages and waiting for confirm
 Sender sends all messages and tracks multiple unconfirmed messages.
 
-**TODO: picture**
+<img src="./images/resend_multi_pipe.jpg" width="100%">
 
 Requirements:
 
@@ -68,7 +68,7 @@ Stream saves messages to persistent storage using monotonic index
 Receiver fetches messages from the stream with current index
 (optional) After sending messages receiver commits index of latest sent message to the index storage
 
-**TODO: picture**
+<img src="./images/stream_pipe.jpg" width="100%">
 
 Requirements:
 
@@ -105,7 +105,7 @@ Sender buffers messages to send while it's waiting for confirms
 
 Receiver sends a confirm after sending a message
 
-**TODO: picture**
+<img src="./images/sequential_pipe.jpg" width="100%">
 
 Requirements:
 
@@ -125,14 +125,14 @@ Delivery does not tolerate errors in Sender or Receiver
 
 **Due to low error tolerance, low throughput and high inner route requirements, this implementation is not very useful**
 
-## Monotonic index pipe
+## Strict monotonic index pipe
 
 Sender assigns a consecutive index to each message
 
 Receiver keeps track of messages indexes and only sends message if its index is higher then the current
 Receiver sets the current index to the last sent message index
 
-**TODO: picture**
+<img src="./images/index_pipe.jpg" width="100%">
 
 Requirements:
 
@@ -161,7 +161,7 @@ the message is put in the send queue
 If message is the right index, it's sent and current index is set to the message index
 After sending a message with the right index, send queue is checked for the next index, which may be sent
 
-**TODO: picture**
+<img src="./images/index_continuous_pipe.jpg" width="100%">
 
 Requirements:
 

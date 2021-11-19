@@ -122,7 +122,7 @@ To enforce continuity, receiver may request missing lower index messages when re
 
 To enforce strictness, receiver doesn't send messages with the same index to already sent messages
 
-<img src="./images/indexed_processing_pipe.jpg" width="100%">
+<img src="./images/index_continuous_pipe.jpg" width="100%">
 
 
 More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
