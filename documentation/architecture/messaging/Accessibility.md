@@ -186,6 +186,8 @@ Metadata forwarders may trace routes, but it depends on the specific implementat
 
 More on pipes and channels: [Pipes and Channels](./Pipes_Channels.md)
 
+Routing techniques to implement accessibility: [Routing](./Routing.md)
+
 Back to: [Delivery properties](Delivery.md)
 
 Up next: [Reliability](Reliability.md)

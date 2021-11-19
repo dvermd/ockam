@@ -144,3 +144,5 @@ Pipe channels can be dynamically established using [pipe channel session process
 Back to: [Delivery properties](Delivery.md)
 
 Implementing specific property pipes: [Pipes Directory](./Pipes_Directory.md)
+
+Routing techniques to implement pipes: [Routing](./Routing.md)
