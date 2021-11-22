@@ -53,12 +53,12 @@ more on pipes in [Pipes and Channels](./Pipes_Channels.md)
   Accessibility describes an ability of the route (and workers in this route) to deliver messages to the destination.
   Accessibility is required property in messaging, since there is not delivery without it.
 
-1. [Reliability and uniqness](./Reliability.md)
+1. [Reliability and uniqueness](./Reliability.md)
   Reliability describe how many sent messages were received and whether some messages are lost
   Uniqness describes whether messages received correspond to unique sent messages or are duplicates of the same sent message
 
 1. [Ordering](./Ordering.md)
-  Ordefing describes whether messages are received in the same order as they were sent
+  Ordering describes whether messages are received in the same order as they were sent
   Uniqness is related to ordering in the sense that absolute ordering requires no duplicates, hence similar techniques are used to achieve those properties
 
 1. [Integrity](./Integrity.md)
@@ -66,7 +66,7 @@ more on pipes in [Pipes and Channels](./Pipes_Channels.md)
   Delivery Integrity of multiple messages is related to ordering and reliability and often requires those properties
 
 1. [Privacy](./Privacy.md)
-  Provacy of messages describes which messaging participants have access to the messages data
+  Privacy of messages describes which messaging participants have access to the messages data
 
 1. [Autheniticity and authorization](./Trust.md)
    Autheniticity describes whether messages received originated at the specific sender

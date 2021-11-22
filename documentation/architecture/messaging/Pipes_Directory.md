@@ -118,7 +118,7 @@ Route from sender to receiver must be backtraceable
 Delivery from sender to receiver must be at-least-once (to not lose confirms)
 
 Delivery properties:
-Delivery is continously ordered
+Delivery is continuously ordered
 
 Error tolerance:
 Delivery does not tolerate errors in Sender or Receiver
@@ -175,7 +175,7 @@ Delivery from sender to receiver should be at-least-once
 
 Delivery properties:
 Delivery is absolutely ordered (may not have message loss or duplicates)
-This can be relaxed to just continous ordering with the check in Receiver changed from `<` to `=<`
+This can be relaxed to just continuous ordering with the check in Receiver changed from `<` to `=<`
 
 Error tolerance:
 Delivery does not tolerate errors in sender or receiver

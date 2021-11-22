@@ -65,7 +65,7 @@ Routes without specific addresses are written with lowercase names starting with
 ### Delivery
 
 A sequence of messages `m1,m2,m3...` send from `worker A` to route `A->B` and received by `worker B`
-Dlievery might have multiple dynamic **delivery properties**, usually statistically measured
+Delivery might have multiple dynamic **delivery properties**, usually statistically measured
 
 More on delivery properties in [Delivery properties](./Delivery.md)
 

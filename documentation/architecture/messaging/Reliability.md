@@ -1,4 +1,4 @@
-# Reliability and uniqness
+# Reliability and uniqueness
 
 Reliability describe how many sent messages were received and whether some messages are lost
 
@@ -10,10 +10,10 @@ Given that `Ru` cannot be higher than `S`, reliability is always `=< 1`
 
 Uniqness describes whether messages received correspond to unique sent messages or are duplicates of the same sent message
 
-We can measure duplication rate in a delivery by calculating a freaction of total messages received `R` to unique messages received `Ru`. `DR = R/Ru`
+We can measure duplication rate in a delivery by calculating a fraction of total messages received `R` to unique messages received `Ru`. `DR = R/Ru`
 Duplication rate of `1` means each received message was received only once, rate of `2` means that messages were received 2 times on average, not necessary each message was duplicated though.
 
-For consistency wirh reliability we can use inverted duplication rate, call it **uniqness rate** as `UR = 1/DR = Ru/R`
+For consistency with reliability we can use inverted duplication rate, call it **uniqueness rate** as `UR = 1/DR = Ru/R`
 
 If `UR = 1` when each message was received only one time, `UR = 0.5` when messages are received twice on average
 
@@ -25,26 +25,28 @@ Uniqness rate `UR(A->B) = 3/4` - 1 message out of 4 was duplicated
 
 ## Delivery modes
 
-Reliability often described together with uniqness as "delivery modes"
+Reliability often described together with uniqueness as "delivery modes"
 
-If we have a delivery mode as a tuple of reliability and uniqness rate: `DM(A->B) = {R(A->B), UR(A->B)}`
+If we have a delivery mode as a tuple of reliability and uniqueness rate: `DM(A->B) = {R(A->B), UR(A->B)}`
 then we can describe the following modes:
 
 1. Unreliable. When messages may be lost or duplicated `DM = {R < 1, UR < 1}`
-1. At most once. When all messages are unique, but may be missing `DM = {R < 1, UR = 1}`
-1. At least once. When all messages are received, but may have duplicates `DM = {R = 1, UR < 1}`
-1. Exactly once. When all messages are received and only once `DM = {R = 1, UR = 1}`
+1. At-most-once. When all messages are unique, but may be missing `DM = {R < 1, UR = 1}`
+1. At-least-once. When all messages are received, but may have duplicates `DM = {R = 1, UR < 1}`
+1. Exactly-once. When all messages are received and only once `DM = {R = 1, UR = 1}`
 
-Exactly once delivery is controversal and hard to achieve in presence of errors.
+Exactly-once delivery is controversal and hard to achieve in presence of errors.
 For practical purposes we're going to use more relaxed version of this definition
-where `DM = {R -> 1, UR -> 1}`
+where both values approach (reasonably close to) 1 `-> 1` instead of equal 1 `= 1`.
+
+Then for relaxed exactly-once: `DM = {R -> 1, UR -> 1}`
 
 <img src="./images/delivery_modes.jpg" width="100%">
 
 
 ## Pipeline reliability
 
-When pipelining deliveries, e.g. `A->B ; B->C`, reliability and uniqness rates are multiplying, because they are probabilities of dependent events
+When pipelining deliveries, e.g. `A->B ; B->C`, reliability and uniqueness rates are multiplying, because they are probabilities of dependent events
 
 <img src="./images/pipeline_delivery.jpg" width="100%">
 
@@ -65,7 +67,7 @@ As you can see preserving high reliability in pipelined delivery is problematic,
 
 **Local delivery is supposed to be implemented as highly reliable**
 
-Workers supposed to have delivery mode close to exactly once **as long as both workers are alive and don't have errors**
+Workers supposed to have delivery mode close to exactly-once **as long as both workers are alive and don't have errors**
 
 For practical purposes delivery mode over a route with single local address `DM([0#B])` is assumed `{R->1, UR->1}`
 
@@ -79,7 +81,7 @@ Since local delivery mode is close to exactly-once, we can assume that reliabili
 
 We call that **pipe reliability**
 
-Same for uniqness rate we can define **pipe uniqness rate**
+Same for uniqueness rate we can define **pipe uniqueness rate**
 
 This allows us to design the pipes as building blocks to achieve reliable delivery, **with a caveat of having actual endpoints and pipe workers always running and not having errors**
 
@@ -96,7 +98,7 @@ If we retry delivery once, it becomes `R1 = R + (1- R) * R = 0.75`, `R2 = 0.875`
 
 If retries `-> ∞`, then `R∞->1`
 
-Retries decrease uniqness rate
+Retries decrease uniqueness rate
 Given `DM(A->B) = {0.5, 1}`
 `DMr(A->B)` - delivery mode of `A->B` with retries
 `DMr∞(A->B) = {->1, ->0.5}`
@@ -105,16 +107,16 @@ To control retries, confirmation messages and timeouts are used
 
 <img src="./images/retries.jpg" width="100%">
 
-To provide at-least once delivery between workers which don't have additional logic,
+To provide at-least-once delivery between workers which don't have additional logic,
 at-least-once pipe can be used:
 
 <img src="./images/resend_pipe.jpg" width="100%">
 
-## Improving uniqness rate
+## Improving uniqueness rate
 
 Uniqness rate of a delivery is what it is because we measure already received message and we can't un-receive it.
 
-For **pipe uniqness rates** we can use some techniques to make sure that pipe sender does not send the duplicates for messages already sent.
+For **pipe uniqueness rates** we can use some techniques to make sure that pipe sender does not send the duplicates for messages already sent.
 
 This is called **deduplication**, when we ignore some received messages based on some knowledge of which messages we already sent.
 
@@ -135,7 +137,7 @@ Receiver discards messages with lower index then already processed.
 
 ## Reliable message delivery in presence of errors in the pipeline
 
-Previously we assumed that workers are always alive and have no errors, in that case given worker forwards all messages exactly once it's internal delivery mode will be exactly once.
+Previously we assumed that workers are always alive and have no errors, in that case given worker forwards all messages exactly-once it's internal delivery mode will be exactly-once.
 
 If it's not so, then we should consider reliability of delivery from worker receiving a message to it sending this message.
 
@@ -161,7 +163,7 @@ then the pipe receiver may be configured to send confirms to the pipe sender onl
 
 For example if we have a pipeline `A->P1; P1->P2; P2->B` and delivery `P2->B` is not reliable, then `P2` should only send confirms to `P1` when it receives a confirm from `B`
 
-There can be multiple confirming workers in this pipeline, e.g. `A->P1; P1->P2; P2->P3; P3-B` etc
+There can be multiple confirming workers in this pipeline, e.g. `A->P1; P1->P2; P2->P3; P3->B` etc
 
 <img src="./images/cascade_confirm.jpg" width="100%">
 

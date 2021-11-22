@@ -24,7 +24,7 @@ Difference between monotonic and strict ordering is that
 **strict ordering doesn't allow duplicates**
 
 1. Continuous ordering
-  A sequence is continously monotonic ordered when:
+  A sequence is continuously monotonic ordered when:
   In a delivery `m1, m2, ...`
   A message `m2` which was sent after `m1`,
   cannot be received before `m1`
@@ -47,7 +47,7 @@ Difference between monotonic and continuous ordering is that
 
 **NOTE: all ordering properties exist per delivery, which only applies for messages sent via same route**
 
-<img src="./images/mutli_route.jpg" width="100%">
+<img src="./images/multi_route.jpg" width="100%">
 
 ## Local delivery
 
@@ -78,7 +78,7 @@ Delivery via local routes through an ordered processor has the same properties a
 
 Similar to reliability, ordering guarantees are weakening when pipelining
 
-Pipelining monotonic and continous delivery results in monotonic delivery
+Pipelining monotonic and continuous delivery results in monotonic delivery
 
 Pipelining strict and non-strict delivery results in non-strict delivery
 
@@ -115,7 +115,7 @@ To enforce strictness, receiver may confirm duplicate messages without sending t
 
 Also known as **send queue approach**
 
-`P1` assigns each message a monotonic continous index
+`P1` assigns each message a monotonic continuous index
 `P2` sends messages in index order
 
 To enforce continuity, receiver may request missing lower index messages when receiving non-consecutive index

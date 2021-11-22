@@ -31,7 +31,7 @@ Pipes preserve the return route of the original message BUT do not trace a retur
 Pipes may use a coordinated state and send more messages between sender and receiver to provide
 additional message delivery properties.
 
-<img src="./images/Pipe.jpg" width="100%">
+<img src="./images/pipe.jpg" width="100%">
 
 2. Channel - a pair of coordinated workers, C1 and C2, such as:
   - When C1 receives a message with:
@@ -64,7 +64,7 @@ Channels preserver the return route AND trace the return route with the channel 
 Same as pipes, channels may provide additional messaging delivery properties and have more messages
 exchanged between C1 and C2.
 
-<img src="./images/Channel.jpg" width="100%">
+<img src="./images/channel.jpg" width="100%">
 
 ## Implementations
 
@@ -77,7 +77,7 @@ In order to have coordinated state, sender and receiver must be accessible by ea
 Since messages are flowing from the sender, receiver does not initiate the communication and rarely needs to store a route to the sender in its state.
 
 1. Static pipe - a pipe in which sender is created with a known route to the receiver
-2. Session pipe - a pipe in which sender is created with a session init route and receiver mey be created during the session establishment
+2. Session pipe - a pipe in which sender is created with a session init route and receiver may be created during the session establishment
 
 <img src="./images/static_pipe.jpg" width="100%">
 
@@ -92,7 +92,7 @@ Channels:
 
 A channel may use two pipes to deliver messages between channel workers
 
-<img src="./images/Channel_pipes.jpg" width="100%">
+<img src="./images/channel_pipes.jpg" width="100%">
 
 
 A channel using pipes as means to deliver messages should take into account that pipes do not trace return routes and just pass the incoming message route as a return route.

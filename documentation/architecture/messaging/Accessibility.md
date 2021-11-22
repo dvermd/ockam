@@ -77,7 +77,7 @@ There are many ways to decide the route `F->B` here
 
 If `F` is a route-based forwarder,
 and there is a route `A->F`
-and there is a orute `F->B`
+and there is a route `F->B`
 
 Then `B` is accessible by `A` via route `A->F ; F->B`
 
@@ -111,7 +111,7 @@ Pipes are used a lot in Ockam messaging, more on pipes in [Pipes and Channels](.
 
 Ockam Routing protocol allows workers to trace return route of the message.
 
-Each time a message is sent by a worker, it may add a return route infomation,
+Each time a message is sent by a worker, it may add a return route information,
 if the worker is forwarding the message,
 it may use the return route of the received message
 and append some additional information to that.
@@ -129,7 +129,7 @@ hence  `A` and `B` are mutually accessible.
 
 ### Local route backtracing
 
-Sice a local route `[0#A]` leads to `A` from any local worker,
+Since a local route `[0#A]` leads to `A` from any local worker,
 then this route is a backtrace for any local route used to send messages from `A`
 
 All local delivery is backtraceable
@@ -169,12 +169,12 @@ Such forwarding worker is called **proxy worker**
 
 Delivery through a proxy worker is backtraceable
 
-By induction, delivey through multiple proxy workers is also backtraceable
+By induction, delivery through multiple proxy workers is also backtraceable
 
 
 #### Backtracing with other types of forwarders
 
-Static forwarders forward to a specific route and usually cannot trace return routes to themself.
+Static forwarders forward to a specific route and usually cannot trace return routes to themselves.
 
 As a general rule, delivery through static forwarders and pipes is not backtraceable,
 but additional forwarding workers can be used to manipulate routes and build backtraceable delivery
